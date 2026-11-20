@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pistil Pioneers — Time Clock</title>
+<title>Pistil Pioneers — Command Center</title>
 <style>
   :root {
     --pine: #1f3626;
@@ -14,261 +14,282 @@
     --parchment: #f4efdf;
     --paper: #fbf8ef;
     --ink: #241f18;
+    --muted: #6d6555;
     --line: #ddd3b6;
     --good: #3f6b45;
+    --good-bg: #e6eedf;
     --bad: #a3432f;
+    --bad-bg: #f5e3dc;
+    --sans: 'Trebuchet MS', Helvetica, Arial, sans-serif;
+    --serif: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
   }
   * { box-sizing: border-box; }
+  html, body { margin: 0; }
   body {
-    margin: 0;
     min-height: 100vh;
     background: var(--parchment);
     background-image:
       radial-gradient(circle at 15% 10%, rgba(63,107,69,0.06), transparent 40%),
       radial-gradient(circle at 85% 90%, rgba(201,154,62,0.08), transparent 45%);
     color: var(--ink);
-    font-family: Georgia, 'Iowan Old Style', 'Times New Roman', serif;
+    font-family: var(--sans);
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    background: linear-gradient(180deg, var(--pine) 0%, var(--pine-deep) 100%);
+    color: var(--parchment);
+    border-bottom: 3px solid var(--gold);
+    padding: 14px 24px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 24px;
+    gap: 18px;
+    flex-wrap: wrap;
   }
-  .clock {
-    width: 100%;
-    max-width: 430px;
+  .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .logo-plate { background: var(--parchment); padding: 6px 10px; border-radius: 3px; flex: none; }
+  .logo-plate img { height: 32px; max-width: 150px; object-fit: contain; display: block; }
+  .brand h1 { margin: 0; font-family: var(--serif); font-weight: 400; font-size: 20px; letter-spacing: 0.06em; }
+  .brand .tagline { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-top: 2px; }
+  .topbar .clock { margin-left: auto; text-align: right; }
+  .topbar .time { font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+  .topbar .time .ampm { font-size: 13px; color: var(--gold); margin-left: 3px; }
+  .topbar .date { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+  .pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 5px 10px; border: 1px solid rgba(244,239,223,0.35); border-radius: 999px;
+    white-space: nowrap;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #9a9a9a; flex: none; }
+  .dot.ok { background: #7fc48a; box-shadow: 0 0 0 3px rgba(127,196,138,0.25); }
+  .dot.warn { background: var(--gold); }
+  .dot.bad { background: #e07a62; }
+
+  /* ---------- Layout ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 20px;
+    padding: 20px 24px 28px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+  .col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+  .panel {
     background: var(--paper);
     border: 1px solid var(--line);
     box-shadow: 0 1px 0 var(--gold) inset;
   }
-  .brandbar {
-    background: var(--pine);
-    background-image: linear-gradient(180deg, var(--pine) 0%, var(--pine-deep) 100%);
-    color: var(--parchment);
-    padding: 22px 28px 20px;
-    text-align: center;
-    border-bottom: 3px solid var(--gold);
-  }
-  .brandbar .logo-plate {
-    background: var(--parchment);
-    display: inline-block;
-    padding: 8px 16px;
-    margin: 0 auto 10px;
-    border-radius: 3px;
-  }
-  .brandbar .logo {
-    height: 42px;
-    max-width: 220px;
-    object-fit: contain;
-    display: block;
-  }
-  .brandbar h1 {
-    margin: 0;
-    font-size: 20px;
-    letter-spacing: 0.06em;
-    font-weight: 400;
-  }
-  .brandbar .tagline {
-    margin-top: 4px;
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-  .plate {
-    text-align: center;
-    padding: 22px 28px 18px;
+  .panel-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    padding: 12px 18px;
     border-bottom: 1px solid var(--line);
   }
-  .plate .time {
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-    font-size: 40px;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    color: var(--pine);
-    letter-spacing: 0.01em;
+  .panel-head h2 {
+    margin: 0; font-size: 11px; letter-spacing: 0.14em; font-weight: 700; color: var(--pine);
   }
-  .plate .time .ampm {
-    font-size: 16px;
-    font-weight: 700;
-    margin-left: 4px;
-    color: var(--gold-dark);
-  }
-  .plate .date {
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-    font-size: 12px;
-    opacity: 0.65;
-    margin-top: 4px;
-  }
-  .body-pad { padding: 26px 28px 28px; }
+  .panel-head .meta { font-size: 11px; color: var(--muted); }
+  .panel-body { padding: 18px; }
+
+  /* ---------- Scan station ---------- */
   #scanBtn {
     width: 100%;
-    padding: 20px;
-    font-size: 14px;
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    background: var(--gold);
-    color: var(--pine-deep);
+    min-height: 150px;
+    padding: 24px;
     border: none;
     cursor: pointer;
-    transition: background 0.15s ease;
+    background: var(--gold);
+    color: var(--pine-deep);
+    font-family: var(--sans);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s ease, transform 0.05s ease;
   }
-  #scanBtn:active { background: var(--gold-dark); }
-  #scanBtn:disabled { opacity: 0.5; cursor: default; }
+  #scanBtn .big { font-size: 22px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+  #scanBtn .small { font-size: 12px; opacity: 0.75; }
+  #scanBtn:active { background: var(--gold-dark); transform: scale(0.995); }
+  #scanBtn:disabled { opacity: 0.6; cursor: default; }
+  #scanBtn.listening { background: var(--pine); color: var(--parchment); }
+  #scanBtn.listening .big::before {
+    content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    background: #7fc48a; margin-right: 10px; vertical-align: middle;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+
   #status {
-    margin-top: 18px;
-    min-height: 60px;
-    text-align: center;
-    font-size: 13px;
-    line-height: 1.6;
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-  }
-  #status .name { font-family: Georgia, serif; font-size: 19px; font-weight: 700; display: block; color: var(--pine); }
-  #status .punch { display: inline-block; margin-top: 4px; padding: 3px 12px; border: 1px solid currentColor; letter-spacing: 0.05em; }
-  #status .punch.in { color: var(--good); }
-  #status .punch.out { color: var(--bad); }
-  #status .err { color: var(--bad); }
-  .log {
-    margin-top: 22px;
-    border-top: 1px solid var(--line);
-    padding-top: 14px;
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-  }
-  .log h2 {
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    opacity: 0.6;
-    margin: 0 0 8px;
-    font-weight: 700;
-    color: var(--pine);
-  }
-  .log ul { list-style: none; margin: 0; padding: 0; font-size: 12px; }
-  .log li { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dotted var(--line); }
-  .log li:last-child { border-bottom: none; }
-  .setup {
-    margin-top: 20px;
-    font-size: 11px;
-    opacity: 0.6;
-    text-align: center;
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-  }
-  .setup a { color: var(--pine); cursor: pointer; text-decoration: underline; }
-  .admin {
-    margin-top: 18px;
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
-    display: none;
-    font-family: 'Trebuchet MS', Helvetica, Arial, sans-serif;
-  }
-  .admin.open { display: block; }
-  .admin h2 {
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    opacity: 0.6;
-    margin: 0 0 10px;
-    font-weight: 700;
-    color: var(--pine);
-  }
-  .admin label {
-    display: block;
-    font-size: 11px;
-    opacity: 0.7;
-    margin-bottom: 4px;
-  }
-  .admin input {
-    width: 100%;
-    padding: 9px 10px;
-    font-family: inherit;
-    font-size: 13px;
+    margin-top: 16px;
+    min-height: 120px;
     border: 1px solid var(--line);
     background: #fff;
-    margin-bottom: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 18px; gap: 6px;
+    font-size: 14px; color: var(--muted);
+    transition: background 0.2s ease, border-color 0.2s ease;
   }
+  #status.in { background: var(--good-bg); border-color: var(--good); }
+  #status.out { background: var(--bad-bg); border-color: var(--bad); }
+  #status.error { border-color: var(--bad); color: var(--bad); }
+  #status .name { font-family: var(--serif); font-size: 28px; font-weight: 700; color: var(--pine); }
+  #status .punch { font-size: 13px; font-weight: 700; letter-spacing: 0.1em; padding: 4px 14px; border: 1px solid currentColor; }
+  #status.in .punch { color: var(--good); }
+  #status.out .punch { color: var(--bad); }
+  #status .when { font-size: 12px; color: var(--muted); }
+
+  /* ---------- Stat tiles ---------- */
+  .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .stat { background: var(--paper); border: 1px solid var(--line); padding: 14px 16px; }
+  .stat .label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+  .stat .value { font-size: 32px; font-weight: 700; color: var(--pine); font-variant-numeric: tabular-nums; margin-top: 4px; }
+  .stat.in .value { color: var(--good); }
+  .stat.out .value { color: var(--bad); }
+
+  /* ---------- Lists ---------- */
+  .list { list-style: none; margin: 0; padding: 0; }
+  .list li {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 18px; border-bottom: 1px dotted var(--line); font-size: 13px;
+  }
+  .list li:last-child { border-bottom: none; }
+  .list .who { font-weight: 700; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .list .sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .list .right { text-align: right; flex: none; font-variant-numeric: tabular-nums; }
+  .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; padding: 2px 7px; border: 1px solid currentColor; }
+  .tag.in { color: var(--good); }
+  .tag.out { color: var(--bad); }
+  .elapsed { font-weight: 700; color: var(--good); }
+  .empty { padding: 22px 18px; text-align: center; font-size: 12px; color: var(--muted); }
+  .scroll { max-height: 340px; overflow-y: auto; }
+
+  .linkbtn {
+    background: none; border: none; padding: 0; cursor: pointer;
+    font: inherit; font-size: 11px; color: var(--gold-dark); text-decoration: underline;
+  }
+
+  /* ---------- Admin ---------- */
+  .admin label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .admin input {
+    width: 100%; padding: 10px; font-family: inherit; font-size: 14px;
+    border: 1px solid var(--line); background: #fff; margin-bottom: 12px;
+  }
+  .admin input:focus { outline: 2px solid var(--gold); outline-offset: -1px; }
+  .admin .tip { font-size: 11px; color: var(--muted); margin: -6px 0 12px; line-height: 1.5; }
   .admin .row { display: flex; gap: 8px; }
-  .admin button {
-    flex: 1;
-    padding: 12px;
-    font-family: inherit;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    border: 1px solid var(--gold-dark);
-    background: #fff;
-    color: var(--gold-dark);
-    cursor: pointer;
+  .admin-body button {
+    flex: 1; padding: 12px; font-family: inherit; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+    border: 1px solid var(--gold-dark); background: #fff; color: var(--gold-dark);
   }
-  .admin button.primary {
-    background: var(--pine);
-    color: var(--parchment);
-    border-color: var(--pine);
+  .admin-body button.primary { background: var(--pine); color: var(--parchment); border-color: var(--pine); }
+  .admin-body button:disabled { opacity: 0.5; cursor: default; }
+  #adminMsg { font-size: 12px; margin-top: 10px; min-height: 16px; }
+  #adminMsg.ok { color: var(--good); }
+  #adminMsg.err { color: var(--bad); }
+  .admin-body[hidden] { display: none; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 860px) {
+    .grid { grid-template-columns: minmax(0, 1fr); padding: 16px; gap: 16px; }
+    .col { gap: 16px; }
+    .topbar { padding: 12px 16px; }
+    .topbar .clock { margin-left: 0; text-align: left; width: 100%; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    .pills { width: 100%; }
   }
-  .admin button:disabled { opacity: 0.5; cursor: default; }
-  .admin .scanTip {
-    font-size: 11px;
-    opacity: 0.6;
-    margin: -4px 0 10px;
+  @media (max-width: 420px) {
+    .stat .value { font-size: 24px; }
+    .stat { padding: 10px 12px; }
+    #status .name { font-size: 22px; }
+    .brand h1 { font-size: 17px; }
   }
-  .admin #adminMsg {
-    font-size: 12px;
-    margin-top: 10px;
-    min-height: 16px;
-  }
-  .admin #adminMsg.ok { color: var(--good); }
-  .admin #adminMsg.err { color: var(--bad); }
 </style>
 </head>
 <body>
 
-<div class="clock">
-  <div class="brandbar">
+<header class="topbar">
+  <div class="brand">
     <div class="logo-plate">
-      <img class="logo" src="https://www.pistilpioneers.com/wp-content/uploads/2021/06/pistil-logo-2021.png" alt="Pistil Pioneers logo">
+      <img src="https://www.pistilpioneers.com/wp-content/uploads/2021/06/pistil-logo-2021.png" alt="Pistil Pioneers logo">
     </div>
-    <h1>PISTIL PIONEERS</h1>
-    <div class="tagline">Oregon Grown · Time Clock</div>
+    <div>
+      <h1>PISTIL PIONEERS</h1>
+      <div class="tagline">Oregon Grown · Command Center</div>
+    </div>
   </div>
-
-  <div class="plate">
+  <div class="pills">
+    <span class="pill"><span class="dot" id="readerDot"></span><span id="readerText">Reader: checking…</span></span>
+    <span class="pill"><span class="dot" id="sheetDot"></span><span id="sheetText">Sheet: idle</span></span>
+  </div>
+  <div class="clock">
     <div class="time" id="liveTime">--:--<span class="ampm" id="liveAmpm">--</span></div>
     <div class="date" id="liveDate">--</div>
   </div>
+</header>
 
-  <div class="body-pad">
-    <button id="scanBtn">Tap Card to Clock In / Out</button>
-
-    <div id="status">Waiting for a card&hellip;</div>
-
-    <div class="log">
-      <h2>RECENT PUNCHES</h2>
-      <ul id="logList"></ul>
-    </div>
-
-    <div class="setup">
-      Reader: <span id="nfcSupport">checking&hellip;</span>
-      &nbsp;·&nbsp;<a id="adminToggle">Manage employees</a>
-    </div>
-
-    <div class="admin" id="adminPanel">
-      <h2>ADD OR RENAME AN EMPLOYEE</h2>
-
-      <label for="adminCardId">Card ID</label>
-      <input id="adminCardId" type="text" placeholder="e.g. 04A1B2C3" autocomplete="off">
-      <div class="scanTip">Don't know the ID? Use "Scan to fill in" below, or tap the card on the main button first — it'll show up as unrecognized.</div>
-
-      <label for="adminName">Employee name</label>
-      <input id="adminName" type="text" placeholder="e.g. Jane Doe" autocomplete="off">
-
-      <div class="row">
-        <button id="adminScanBtn">SCAN TO FILL IN</button>
-        <button id="adminSaveBtn" class="primary">SAVE</button>
+<main class="grid">
+  <!-- Left: scan station -->
+  <div class="col">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>CLOCK IN / OUT</h2>
+        <span class="meta" id="readerHint"></span>
       </div>
-      <div id="adminMsg"></div>
+      <div class="panel-body">
+        <button id="scanBtn">
+          <span class="big" id="scanBig">Tap to Start Reader</span>
+          <span class="small" id="scanSmall">Then hold an employee card to the back of the device</span>
+        </button>
+        <div id="status">Waiting for a card…</div>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stat in"><div class="label">On the clock</div><div class="value" id="statOn">0</div></div>
+      <div class="stat"><div class="label">Ins today</div><div class="value" id="statIns">0</div></div>
+      <div class="stat out"><div class="label">Outs today</div><div class="value" id="statOuts">0</div></div>
     </div>
+
+    <section class="panel admin">
+      <div class="panel-head">
+        <h2>MANAGE EMPLOYEES</h2>
+        <button class="linkbtn" id="adminToggle" aria-expanded="false">Open</button>
+      </div>
+      <div class="panel-body admin-body" id="adminPanel" hidden>
+        <label for="adminCardId">Card ID</label>
+        <input id="adminCardId" type="text" placeholder="e.g. 04A1B2C3" autocomplete="off">
+        <div class="tip">Don't know the ID? Use "Scan to fill in", or tap the card on the main reader first — it'll show up as unrecognized.</div>
+
+        <label for="adminName">Employee name</label>
+        <input id="adminName" type="text" placeholder="e.g. Jane Doe" autocomplete="off">
+
+        <div class="row">
+          <button id="adminScanBtn">Scan to fill in</button>
+          <button id="adminSaveBtn" class="primary">Save</button>
+        </div>
+        <div id="adminMsg"></div>
+      </div>
+    </section>
   </div>
-</div>
+
+  <!-- Right: live board -->
+  <div class="col">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>ON THE CLOCK NOW</h2>
+        <span class="meta">from this device</span>
+      </div>
+      <ul class="list scroll" id="onList"></ul>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>TODAY'S ACTIVITY</h2>
+        <button class="linkbtn" id="clearBtn">Clear screen</button>
+      </div>
+      <ul class="list scroll" id="logList"></ul>
+    </section>
+  </div>
+</main>
 
 <script>
 // ====== CONFIGURATION ======
@@ -277,37 +298,130 @@ const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwgRebGrZHTLMO6znc1
 // Time zone shown on the live clock (US Pacific, since Pistil Pioneers is in Lane County, Oregon).
 // Change to another US zone if needed: "America/Denver", "America/Chicago", "America/New_York".
 const DISPLAY_TIMEZONE = "America/Los_Angeles";
+// Ignore the same card being read again within this many seconds (cards often read twice).
+const DUPLICATE_WINDOW_SECONDS = 5;
 // ============================
 
-const scanBtn = document.getElementById('scanBtn');
-const statusEl = document.getElementById('status');
-const logList = document.getElementById('logList');
-const nfcSupportEl = document.getElementById('nfcSupport');
-const liveTime = document.getElementById('liveTime');
-const liveAmpm = document.getElementById('liveAmpm');
-const liveDate = document.getElementById('liveDate');
+const $ = (id) => document.getElementById(id);
+const STORE_KEY = 'pp-command-center';
 
+// ---------- Small helpers ----------
+function todayKey() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: DISPLAY_TIMEZONE }); // YYYY-MM-DD
+}
+function fmtTime(ms) {
+  return new Date(ms).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: DISPLAY_TIMEZONE });
+}
+function fmtElapsed(ms) {
+  const mins = Math.max(0, Math.floor(ms / 60000));
+  const h = Math.floor(mins / 60), m = mins % 60;
+  return h ? `${h}h ${String(m).padStart(2, '0')}m` : `${m}m`;
+}
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+function setPill(dotId, textId, state, text) {
+  $(dotId).className = 'dot ' + (state || '');
+  $(textId).textContent = text;
+}
+
+// ---------- Saved state (this device only) ----------
+// { day: 'YYYY-MM-DD', punches: [{name, cardId, punch, time, at}], onClock: {cardId: {name, since}} }
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem(STORE_KEY));
+    if (s && s.punches && s.onClock) return s;
+  } catch (e) {}
+  return { day: todayKey(), punches: [], onClock: {} };
+}
+function saveState() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+}
+let state = loadState();
+
+function rollDayIfNeeded() {
+  // New day: clear the activity log, but keep anyone still on the clock (overnight shifts).
+  if (state.day !== todayKey()) {
+    state.day = todayKey();
+    state.punches = [];
+    saveState();
+    render();
+  }
+}
+
+// ---------- Live clock ----------
 function tickClock() {
   const now = new Date();
-  const timeStr = now.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: '2-digit', timeZone: DISPLAY_TIMEZONE });
-  const parts = timeStr.split(' ');
-  liveTime.firstChild.textContent = parts[0];
-  liveAmpm.textContent = parts[1] || '';
-  liveDate.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: DISPLAY_TIMEZONE });
+  const parts = now.toLocaleTimeString('en-US', { hour12: true, hour: 'numeric', minute: '2-digit', timeZone: DISPLAY_TIMEZONE }).split(' ');
+  $('liveTime').firstChild.textContent = parts[0];
+  $('liveAmpm').textContent = parts[1] || '';
+  $('liveDate').textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: DISPLAY_TIMEZONE });
+  rollDayIfNeeded();
 }
-tickClock();
-setInterval(tickClock, 1000);
 
-function addLogRow(name, punch, time) {
-  const li = document.createElement('li');
-  li.innerHTML = `<span>${name}</span><span>${punch.toUpperCase()} · ${time}</span>`;
-  logList.prepend(li);
-  while (logList.children.length > 8) logList.removeChild(logList.lastChild);
+// ---------- Rendering ----------
+function render() {
+  // On the clock
+  const onList = $('onList');
+  onList.replaceChildren();
+  const on = Object.entries(state.onClock).sort((a, b) => a[1].since - b[1].since);
+  if (!on.length) {
+    onList.append(el('li', 'empty', 'Nobody is clocked in on this device.'));
+  }
+  for (const [, p] of on) {
+    const li = el('li');
+    const left = el('div');
+    left.append(el('div', 'who', p.name), el('div', 'sub', 'In since ' + fmtTime(p.since)));
+    const right = el('div', 'right');
+    right.append(el('span', 'elapsed', fmtElapsed(Date.now() - p.since)));
+    li.append(left, right);
+    onList.append(li);
+  }
+
+  // Activity log
+  const logList = $('logList');
+  logList.replaceChildren();
+  if (!state.punches.length) {
+    logList.append(el('li', 'empty', 'No punches yet today.'));
+  }
+  for (const p of state.punches) {
+    const li = el('li');
+    const left = el('div');
+    left.append(el('div', 'who', p.name), el('div', 'sub', p.time || fmtTime(p.at)));
+    const right = el('div', 'right');
+    right.append(el('span', 'tag ' + (p.punch === 'in' ? 'in' : 'out'), p.punch === 'in' ? 'IN' : 'OUT'));
+    li.append(left, right);
+    logList.append(li);
+  }
+
+  // Stats
+  $('statOn').textContent = on.length;
+  $('statIns').textContent = state.punches.filter(p => p.punch === 'in').length;
+  $('statOuts').textContent = state.punches.filter(p => p.punch !== 'in').length;
 }
+
+function showStatus(kind, parts) {
+  const s = $('status');
+  s.className = kind || '';
+  s.replaceChildren(...parts);
+}
+
+// ---------- Punching ----------
+let busy = false;
+let lastCard = { id: null, at: 0 };
 
 async function sendPunch(cardId) {
-  statusEl.innerHTML = 'Reading card&hellip;';
-  scanBtn.disabled = true;
+  const now = Date.now();
+  if (busy) return;
+  if (cardId === lastCard.id && now - lastCard.at < DUPLICATE_WINDOW_SECONDS * 1000) return;
+  lastCard = { id: cardId, at: now };
+
+  busy = true;
+  showStatus('', [document.createTextNode('Reading card…')]);
+  setPill('sheetDot', 'sheetText', 'warn', 'Sheet: sending…');
   try {
     const res = await fetch(WEBHOOK_URL, {
       method: 'POST',
@@ -315,104 +429,126 @@ async function sendPunch(cardId) {
       body: JSON.stringify({ cardId })
     });
     const data = await res.json();
+    setPill('sheetDot', 'sheetText', 'ok', 'Sheet: connected');
     if (data.error) {
-      statusEl.innerHTML = `<span class="err">${data.error}</span>`;
-    } else {
-      const punchClass = data.punch === 'in' ? 'in' : 'out';
-      statusEl.innerHTML = `
-        <span class="name">${data.name}</span>
-        <span class="punch ${punchClass}">CLOCKED ${data.punch.toUpperCase()}</span>
-        <div style="margin-top:4px; opacity:0.6;">${data.time}</div>
-      `;
-      addLogRow(data.name, data.punch, data.time);
+      showStatus('error', [el('div', null, data.error), el('div', 'when', 'Card ID: ' + cardId)]);
+      return;
     }
+    const isIn = data.punch === 'in';
+    showStatus(isIn ? 'in' : 'out', [
+      el('span', 'name', data.name),
+      el('span', 'punch', isIn ? 'CLOCKED IN' : 'CLOCKED OUT'),
+      el('span', 'when', data.time || fmtTime(now))
+    ]);
+
+    state.punches.unshift({ name: data.name, cardId, punch: isIn ? 'in' : 'out', time: data.time, at: now });
+    if (state.punches.length > 200) state.punches.length = 200;
+    if (isIn) state.onClock[cardId] = { name: data.name, since: now };
+    else delete state.onClock[cardId];
+    saveState();
+    render();
   } catch (err) {
-    statusEl.innerHTML = `<span class="err">Couldn't reach the sheet. Check connection.</span>`;
+    setPill('sheetDot', 'sheetText', 'bad', 'Sheet: unreachable');
+    showStatus('error', [el('div', null, "Couldn't reach the sheet. Check the internet connection and try again.")]);
+    lastCard = { id: null, at: 0 }; // allow an immediate retry
   } finally {
-    scanBtn.disabled = false;
+    busy = false;
   }
 }
 
-// Manual fallback / testing: type a card ID and press Enter via prompt
-scanBtn.addEventListener('click', () => {
-  if (!('NDEFReader' in window)) {
+// ---------- NFC reader ----------
+const hasNFC = 'NDEFReader' in window;
+let readerOn = false;
+let adminCapture = false; // when true, the next card fills the admin form instead of punching
+
+async function startScan() {
+  if (readerOn) return;
+  try {
+    const ndef = new NDEFReader();
+    await ndef.scan();
+    readerOn = true;
+    $('scanBtn').classList.add('listening');
+    $('scanBig').textContent = 'Reader On';
+    $('scanSmall').textContent = 'Hold a card to the back of the device';
+    setPill('readerDot', 'readerText', 'ok', 'Reader: listening');
+    showStatus('', [document.createTextNode('Ready — hold a card to the back of the device.')]);
+    ndef.onreading = (event) => {
+      const id = event.serialNumber || 'unknown';
+      if (adminCapture) {
+        adminCapture = false;
+        $('adminCardId').value = id;
+        adminMsg('Card ID captured. Enter a name and save.', 'ok');
+        return;
+      }
+      sendPunch(id);
+    };
+    ndef.onreadingerror = () => {
+      showStatus('error', [document.createTextNode('Could not read that card. Try again.')]);
+    };
+  } catch (err) {
+    setPill('readerDot', 'readerText', 'bad', 'Reader: permission denied');
+    showStatus('error', [document.createTextNode('NFC permission denied or unavailable.')]);
+  }
+}
+
+$('scanBtn').addEventListener('click', () => {
+  if (!hasNFC) {
     const manual = prompt('NFC not available on this device/browser.\nEnter a card ID manually to test:');
-    if (manual) sendPunch(manual.trim());
+    if (manual) { lastCard = { id: null, at: 0 }; sendPunch(manual.trim()); }
     return;
   }
   startScan();
 });
 
-async function startScan() {
-  try {
-    const ndef = new NDEFReader();
-    await ndef.scan();
-    statusEl.textContent = 'Ready — hold a card to the back of the device.';
-    ndef.onreading = (event) => {
-      const cardId = event.serialNumber || 'unknown';
-      sendPunch(cardId);
-    };
-    ndef.onreadingerror = () => {
-      statusEl.innerHTML = '<span class="err">Could not read that card. Try again.</span>';
-    };
-  } catch (err) {
-    statusEl.innerHTML = `<span class="err">NFC permission denied or unavailable.</span>`;
-  }
-}
-
-if ('NDEFReader' in window) {
-  nfcSupportEl.textContent = 'Web NFC supported (tap the button to start)';
+if (hasNFC) {
+  setPill('readerDot', 'readerText', 'warn', 'Reader: tap to start');
 } else {
-  nfcSupportEl.textContent = 'Web NFC not supported in this browser — use Chrome on Android, or the manual test prompt';
+  setPill('readerDot', 'readerText', 'bad', 'Reader: not supported');
+  $('scanBig').textContent = 'Enter Card ID';
+  $('scanSmall').textContent = 'Web NFC needs Chrome on Android — tap to type an ID for testing';
 }
 
-// ---- Manage employees panel ----
-const adminToggle = document.getElementById('adminToggle');
-const adminPanel = document.getElementById('adminPanel');
-const adminCardId = document.getElementById('adminCardId');
-const adminName = document.getElementById('adminName');
-const adminScanBtn = document.getElementById('adminScanBtn');
-const adminSaveBtn = document.getElementById('adminSaveBtn');
-const adminMsg = document.getElementById('adminMsg');
-
-adminToggle.addEventListener('click', () => {
-  adminPanel.classList.toggle('open');
-  adminToggle.textContent = adminPanel.classList.contains('open') ? 'Close' : 'Manage employees';
+$('clearBtn').addEventListener('click', () => {
+  if (!confirm("Clear today's activity and the on-the-clock list from this screen?\n(Your Google Sheet is not changed.)")) return;
+  state = { day: todayKey(), punches: [], onClock: {} };
+  saveState();
+  render();
+  showStatus('', [document.createTextNode('Waiting for a card…')]);
 });
 
-adminScanBtn.addEventListener('click', async () => {
-  if (!('NDEFReader' in window)) {
+// ---------- Manage employees ----------
+function adminMsg(text, cls) {
+  const m = $('adminMsg');
+  m.textContent = text;
+  m.className = cls || '';
+}
+
+$('adminToggle').addEventListener('click', () => {
+  const panel = $('adminPanel');
+  panel.hidden = !panel.hidden;
+  $('adminToggle').textContent = panel.hidden ? 'Open' : 'Close';
+  $('adminToggle').setAttribute('aria-expanded', String(!panel.hidden));
+  if (panel.hidden) adminCapture = false;
+});
+
+$('adminScanBtn').addEventListener('click', async () => {
+  if (!hasNFC) {
     const manual = prompt('NFC not available here. Enter the card ID manually:');
-    if (manual) adminCardId.value = manual.trim();
+    if (manual) $('adminCardId').value = manual.trim();
     return;
   }
-  try {
-    const ndef = new NDEFReader();
-    await ndef.scan();
-    adminMsg.textContent = 'Hold the card to the back of the device…';
-    adminMsg.className = '';
-    ndef.onreading = (event) => {
-      adminCardId.value = event.serialNumber || '';
-      adminMsg.textContent = 'Card ID captured. Enter a name and save.';
-      adminMsg.className = 'ok';
-    };
-  } catch (err) {
-    adminMsg.textContent = 'NFC permission denied or unavailable.';
-    adminMsg.className = 'err';
-  }
+  adminCapture = true;
+  await startScan();
+  if (readerOn) adminMsg('Hold the card to the back of the device… (it will not clock them in)', '');
 });
 
-adminSaveBtn.addEventListener('click', async () => {
-  const cardId = adminCardId.value.trim();
-  const name = adminName.value.trim();
-  if (!cardId || !name) {
-    adminMsg.textContent = 'Enter both a card ID and a name.';
-    adminMsg.className = 'err';
-    return;
-  }
-  adminSaveBtn.disabled = true;
-  adminMsg.textContent = 'Saving…';
-  adminMsg.className = '';
+$('adminSaveBtn').addEventListener('click', async () => {
+  const cardId = $('adminCardId').value.trim();
+  const name = $('adminName').value.trim();
+  if (!cardId || !name) { adminMsg('Enter both a card ID and a name.', 'err'); return; }
+  const btn = $('adminSaveBtn');
+  btn.disabled = true;
+  adminMsg('Saving…', '');
   try {
     const res = await fetch(WEBHOOK_URL, {
       method: 'POST',
@@ -420,22 +556,24 @@ adminSaveBtn.addEventListener('click', async () => {
       body: JSON.stringify({ action: 'setEmployee', cardId, name })
     });
     const data = await res.json();
-    if (data.error) {
-      adminMsg.textContent = data.error;
-      adminMsg.className = 'err';
-    } else {
-      adminMsg.textContent = `Saved: ${data.name} (${data.cardId}) — ${data.mode === 'updated' ? 'name updated' : 'new employee added'}.`;
-      adminMsg.className = 'ok';
-      adminCardId.value = '';
-      adminName.value = '';
-    }
+    setPill('sheetDot', 'sheetText', 'ok', 'Sheet: connected');
+    if (data.error) { adminMsg(data.error, 'err'); return; }
+    adminMsg(`Saved: ${data.name} (${data.cardId}) — ${data.mode === 'updated' ? 'name updated' : 'new employee added'}.`, 'ok');
+    $('adminCardId').value = '';
+    $('adminName').value = '';
   } catch (err) {
-    adminMsg.textContent = "Couldn't reach the sheet. Check connection.";
-    adminMsg.className = 'err';
+    setPill('sheetDot', 'sheetText', 'bad', 'Sheet: unreachable');
+    adminMsg("Couldn't reach the sheet. Check connection.", 'err');
   } finally {
-    adminSaveBtn.disabled = false;
+    btn.disabled = false;
   }
 });
+
+// ---------- Start ----------
+tickClock();
+render();
+setInterval(tickClock, 1000);
+setInterval(render, 30000); // keep the "time on the clock" counters fresh
 </script>
 
 </body>
